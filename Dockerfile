@@ -7,8 +7,9 @@ FROM python:3.9
 # Set the working directory
 WORKDIR /app
 
-# Install Ollama
+# Install Ollama and other dependencies
 COPY --from=ollama /bin/ollama /usr/local/bin/
+RUN apt-get -y update && apt-get install -y tesseract-ocr libssl-dev
 
 # Install dependencies
 COPY requirements.txt .
