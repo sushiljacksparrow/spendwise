@@ -44,6 +44,8 @@ def upload_page():
                                    msg='Successfully processed',
                                    receipt_data=receipt_data,
                                    img_src=UPLOAD_FOLDER + file.filename)
+        else:
+            return render_template('upload.html', msg='File type not allowed')
     elif request.method == 'GET':
         return render_template('upload.html')
 
