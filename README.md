@@ -22,12 +22,18 @@ You will need to have Tesseract installed on your system. You can find installat
    cd ocr-app
    ```
 
-2. Install the Python dependencies:
+2. Create and activate a virtual environment:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+
+3. Install the Python dependencies:
    ```bash
    pip install -r requirements.txt
    ```
 
-3. Run the server:
+4. Run the server:
    ```bash
    python src/server.py
    ```
