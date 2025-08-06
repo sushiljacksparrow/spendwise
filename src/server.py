@@ -1,10 +1,10 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 import os
 server = Flask(__name__)
 
 @server.route("/")
-def home_page():
-    return render_template('index.html')
+def index():
+    return redirect(url_for('upload_page'))
 
 try:
     from PIL import Image
