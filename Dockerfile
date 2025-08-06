@@ -9,6 +9,7 @@ WORKDIR /app
 
 # Install Ollama and other dependencies
 COPY --from=ollama /bin/ollama /usr/local/bin/
+# Install libssl-dev to make sure the ssl module is available in python
 RUN apt-get -y update && apt-get install -y tesseract-ocr libssl-dev
 
 # Install dependencies

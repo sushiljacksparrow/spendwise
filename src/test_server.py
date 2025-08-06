@@ -15,9 +15,10 @@ def create_fake_receipt_image():
     123 Main St, Anytown, USA
     Date: 10/10/2025 Time: 10:00
 
-    ITEM 1 10.00
-    ITEM 2 20.00
+    ITEM 1 1 10.00
+    ITEM 2 2 20.00
     TOTAL 30.00
+    TIP 5.00
     """
     img = Image.new('RGB', (400, 300), color = (255, 255, 255))
     d = ImageDraw.Draw(img)
@@ -56,7 +57,7 @@ def test_upload_page_integration_receipt(client, mocker):
     # Mock the ollama.chat function
     mock_response = {
         'message': {
-            'content': '{"store_name": "My Awesome Store", "date": "10/10/2025", "time": "10:00", "receipt_items": [{"item": "ITEM 1", "price": 10.0}, {"item": "ITEM 2", "price": 20.0}]}'
+            'content': '{"store_name": "My Awesome Store", "date": "10/10/2025", "time": "10:00", "receipt_items": [{"item": "ITEM 1", "price": 10.0, "quantity": 1, "category": "grocery"}, {"item": "ITEM 2", "price": 20.0, "quantity": 2, "category": "grocery"}], "total_amount": 30.0, "tip": 5.0}'
         }
     }
     mocker.patch('ollama.chat', return_value=mock_response)
@@ -74,3 +75,6 @@ def test_upload_page_integration_receipt(client, mocker):
     assert b'10:00' in response.data
     assert b'ITEM 1' in response.data
     assert b'10.0' in response.data
+    assert b'grocery' in response.data
+    assert b'30.0' in response.data
+    assert b'5.0' in response.data
