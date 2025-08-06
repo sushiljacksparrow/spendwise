@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 import os
-server = Flask(__name__)
+server = Flask(__name__, template_folder='../templates')
 
 @server.route("/")
 def index():
