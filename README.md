@@ -40,6 +40,12 @@ You will need to have Tesseract installed on your system. You can find installat
 
 The server will be running at `http://localhost:5000`. You can access the application by navigating to `http://localhost:5000/upload` in your web browser.
 
+To change the port, you can set the `PORT` environment variable:
+```bash
+export PORT=8080
+python src/server.py
+```
+
 ## Docker
 
 You can also run the application using Docker.
