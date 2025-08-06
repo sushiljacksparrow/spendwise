@@ -33,7 +33,15 @@ You will need to have Tesseract installed on your system. You can find installat
    pip install -r requirements.txt
    ```
 
-4. Run the server:
+4. Install and run Ollama:
+   Follow the instructions on the Ollama website to install and run Ollama: [https://ollama.com/download](https://ollama.com/download)
+
+   Then, pull the `llama2:7b` model:
+   ```bash
+   ollama pull llama2:7b
+   ```
+
+5. Run the server:
    ```bash
    python src/server.py
    ```
