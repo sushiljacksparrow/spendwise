@@ -1,17 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for
 import os
 import re
-server = Flask(__name__, template_folder='../templates')
-
-@server.route("/")
-def index():
-    return redirect(url_for('upload_page'))
-
-try:
-    from PIL import Image
-except ImportError:
-    import Image
+import json
+from PIL import Image
 import pytesseract
+import ollama
+
+server = Flask(__name__, template_folder='../templates')
 
 # define a folder to store and later serve the images
 UPLOAD_FOLDER = '/static/uploads/'
@@ -41,8 +36,8 @@ def upload_page():
             # call the OCR function on it
             extracted_text = ocr_core(file)
 
-            # parse the receipt
-            receipt_data = parse_receipt(extracted_text)
+            # process the OCR text with Ollama
+            receipt_data = process_with_ollama(extracted_text)
 
             # extract the text and display it
             return render_template('upload.html',
@@ -57,47 +52,46 @@ def ocr_core(filename):
     This function will handle the core OCR processing of images.
     """
     config = '--psm 4'
-    text = pytesseract.image_to_string(Image.open(filename), config=config)  # We'll use Pillow's Image class to open the image and pytesseract to detect the string in the image
+    text = pytesseract.image_to_string(Image.open(filename), config=config)
     return text
 
-def parse_receipt(text):
+def process_with_ollama(text):
     """
-    This function will parse the OCR text and extract structured data.
+    This function will process the OCR text with Ollama to get structured data.
     """
-    lines = text.split('\n')
+    prompt = f"""
+    The following text is the output of an OCR scan of a store receipt.
+    Please extract the store name, date, time, and a list of items with their prices.
+    Return the information as a JSON object with the following keys: "store_name", "date", "time", "items".
+    The "items" should be a list of objects, where each object has the keys "item" and "price".
+    If you find any errors in the OCR output, please try to correct them.
 
-    store_name = lines[0] if lines else "Unknown"
+    OCR Text:
+    {text}
+    """
 
-    date_pattern = r'\d{1,2}[/-]\d{1,2}[/-]\d{2,4}'
-    time_pattern = r'\d{1,2}:\d{2}'
+    response = ollama.chat(model='llama2:7b', messages=[
+        {
+            'role': 'user',
+            'content': prompt,
+        },
+    ])
 
-    date = "Unknown"
-    time = "Unknown"
+    try:
+        # The LLM output might not be a perfect JSON, so we need to be careful
+        result_text = response['message']['content']
+        json_part = result_text[result_text.find('{'):result_text.rfind('}')+1]
+        receipt_data = json.loads(json_part)
+    except (json.JSONDecodeError, IndexError, KeyError):
+        # If the LLM fails to return a valid JSON, we return a default object
+        receipt_data = {
+            "store_name": "Unknown",
+            "date": "Unknown",
+            "time": "Unknown",
+            "items": []
+        }
 
-    for line in lines:
-        if re.search(date_pattern, line):
-            date = re.search(date_pattern, line).group()
-        if re.search(time_pattern, line):
-            time = re.search(time_pattern, line).group()
-
-    price_pattern = r'([0-9]+\.[0-9]+)'
-    parsed_items = []
-    for line in lines:
-        if re.search(price_pattern, line):
-            try:
-                price_match = re.search(price_pattern, line)
-                price = float(price_match.group())
-                item = line[:price_match.start()].strip()
-                parsed_items.append({'item': item, 'price': price})
-            except (ValueError, AttributeError):
-                continue
-
-    return {
-        'store_name': store_name,
-        'date': date,
-        'time': time,
-        'receipt_items': parsed_items
-    }
+    return receipt_data
 
 if __name__ == "__main__":
    server.run(debug=True, host='0.0.0.0')
