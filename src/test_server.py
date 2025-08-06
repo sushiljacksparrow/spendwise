@@ -3,6 +3,7 @@ import pytest
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 from server import server, ocr_core
+import json
 
 # Helper function to create a fake image
 def create_fake_receipt_image():
@@ -48,10 +49,18 @@ def client():
     with server.test_client() as client:
         yield client
 
-def test_upload_page_integration_receipt(client):
+def test_upload_page_integration_receipt(client, mocker):
     """
     Tests the /upload endpoint by simulating a receipt upload.
     """
+    # Mock the ollama.chat function
+    mock_response = {
+        'message': {
+            'content': '{"store_name": "My Awesome Store", "date": "10/10/2025", "time": "10:00", "receipt_items": [{"item": "ITEM 1", "price": 10.0}, {"item": "ITEM 2", "price": 20.0}]}'
+        }
+    }
+    mocker.patch('ollama.chat', return_value=mock_response)
+
     fake_image = create_fake_receipt_image()
 
     response = client.post('/upload',
