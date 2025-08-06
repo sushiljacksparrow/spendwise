@@ -61,9 +61,12 @@ def process_with_ollama(text):
     """
     prompt = f"""
     The following text is the output of an OCR scan of a store receipt.
-    Please extract the store name, date, time, and a list of items with their prices.
-    Return the information as a JSON object with the following keys: "store_name", "date", "time", "items".
-    The "items" should be a list of objects, where each object has the keys "item" and "price".
+    Please extract the store name, date, time, a list of items with their prices, and the total amount of the purchase.
+    For each item, please also extract the quantity and categorize it.
+    If the receipt is from a restaurant, please also extract the tip amount.
+    Return the information as a JSON object with the following keys: "store_name", "date", "time", "items", "total_amount", "tip".
+    The "items" should be a list of objects, where each object has the keys "item", "price", "quantity", and "category".
+    Please come up with a consistent set of categories for the items (e.g., "grocery", "home improvement", "eating out", "health and wellness").
     If you find any errors in the OCR output, please try to correct them.
 
     OCR Text:

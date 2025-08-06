@@ -26,17 +26,23 @@
      <p><b>Store:</b> {{ receipt_data.store_name }}</p>
      <p><b>Date:</b> {{ receipt_data.date }}</p>
      <p><b>Time:</b> {{ receipt_data.time }}</p>
+     <p><b>Total Amount:</b> {{ receipt_data.total_amount }}</p>
+     <p><b>Tip:</b> {{ receipt_data.tip }}</p>
 
      <h3>Items</h3>
      <table border="1">
        <tr>
          <th>Item</th>
          <th>Price</th>
+         <th>Quantity</th>
+         <th>Category</th>
        </tr>
        {% for item in receipt_data.receipt_items %}
          <tr>
            <td>{{ item.item }}</td>
            <td>{{ item.price }}</td>
+           <td>{{ item.quantity }}</td>
+           <td>{{ item.category }}</td>
          </tr>
        {% endfor %}
      </table>
