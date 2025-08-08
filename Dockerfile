@@ -9,21 +9,21 @@ WORKDIR /app
 
 # Install Ollama and other dependencies
 COPY --from=ollama /bin/ollama /usr/local/bin/
-# Install libssl-dev to make sure the ssl module is available in python
 RUN apt-get -y update && apt-get install -y tesseract-ocr libssl-dev
 
 # Install dependencies
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-# Copy the application code
-COPY src/ .
-COPY templates/ templates/
-
 # Pull the model
+# This is done before copying the application code to improve caching
 RUN ollama serve & \
     sleep 5 && \
     ollama pull llama2:7b
+
+# Copy the application code
+COPY src/ .
+COPY templates/ templates/
 
 # Expose the port
 EXPOSE 5000
