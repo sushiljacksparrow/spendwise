@@ -1,6 +1,6 @@
 # OCR Web Application
 
-This is a simple web application that uses Tesseract to perform Optical Character Recognition (OCR) on images.
+This is a simple web application that uses Tesseract and Ollama to perform Optical Character Recognition (OCR) on images and extract structured data from them.
 
 ## Getting Started
 
@@ -11,29 +11,26 @@ These instructions will get you a copy of the project up and running on your loc
 * Python 3
 * pip
 * Tesseract
+* Ollama
 
-You will need to have Tesseract installed on your system. You can find installation instructions for your OS here: [https://github.com/tesseract-ocr/tesseract/wiki](https://github.com/tesseract-ocr/tesseract/wiki)
+### Local Installation
 
-### Installing
-
-1. Clone the repository:
+1. **Clone the repository:**
    ```bash
    git clone https://github.com/example/ocr-app.git
    cd ocr-app
    ```
 
-2. Create and activate a virtual environment:
+2. **Create and activate a virtual environment:**
    ```bash
    python3 -m venv venv
    source venv/bin/activate
    ```
 
-3. Install the Python dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
+3. **Install Tesseract:**
+   You will need to have Tesseract installed on your system. You can find installation instructions for your OS here: [https://github.com/tesseract-ocr/tesseract/wiki](https://github.com/tesseract-ocr/tesseract/wiki)
 
-4. Install and run Ollama:
+4. **Install and run Ollama:**
    Follow the instructions on the Ollama website to install and run Ollama: [https://ollama.com/download](https://ollama.com/download)
 
    Then, pull the `llama2:7b` model:
@@ -41,7 +38,12 @@ You will need to have Tesseract installed on your system. You can find installat
    ollama pull llama2:7b
    ```
 
-5. Run the server:
+5. **Install Python dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+6. **Run the server:**
    ```bash
    python src/server.py
    ```
@@ -56,16 +58,16 @@ python src/server.py
 
 ## Docker
 
-You can also run the application using Docker.
+You can also run the application using Docker. This is the recommended way to run the application as it will set up everything for you.
 
-1. Build the Docker image:
+1. **Build the Docker image:**
    ```bash
    docker build -t ocr-app .
    ```
 
-2. Run the Docker container:
+2. **Run the Docker container:**
    ```bash
-   docker run -p 5000:5000 ocr-app
+   docker run -d -p 5000:5000 --name ocr-app ocr-app
    ```
 
 The application will be accessible at `http://localhost:5000/upload`.
